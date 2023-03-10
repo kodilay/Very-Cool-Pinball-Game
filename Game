@@ -1,0 +1,80 @@
+import random
+import tkinter as tk
+
+# Topların rengi için renkler listesi oluşturalım
+colors = ["red", "green", "blue", "yellow", "orange", "purple", "pink"]
+
+# Top sınıfı oluşturalım
+class Ball:
+    def __init__(self, canvas, x, y, dx, dy, size):
+        self.canvas = canvas
+        self.x = x
+        self.y = y
+        self.dx = dx
+        self.dy = dy
+        self.size = size
+        self.color = random.choice(colors)  # Rastgele renk seçimi
+        self.id = canvas.create_oval(x, y, x+size, y+size, fill=self.color)
+
+    def move(self):
+        self.x += self.dx
+        self.y += self.dy
+        if self.x <= 0 or self.x >= 400:
+            self.dx = -self.dx
+        if self.y <= 0 or self.y >= 400:
+            self.dy = -self.dy
+        self.canvas.move(self.id, self.dx, self.dy)
+
+# Oyun sınıfı oluşturalım
+class Game:
+    def __init__(self, master):
+        self.master = master
+        master.title("Pinball")
+        self.canvas = tk.Canvas(master, width=400, height=400)
+        self.canvas.pack()
+        self.balls = []
+        for i in range(5):
+            size = random.randint(20, 40)
+            x = random.randint(size, 400-size)
+            y = random.randint(size, 400-size)
+            dx = random.randint(-5, 5)
+            dy = random.randint(-5, 5)
+            ball = Ball(self.canvas, x, y, dx, dy, size)
+            self.balls.append(ball)
+        self.score = 0
+        self.score_label = tk.Label(master, text="Score: {}".format(self.score))
+        self.score_label.pack()
+        self.lives = 3
+        self.lives_label = tk.Label(master, text="Lives: {}".format(self.lives))
+        self.lives_label.pack()
+
+    def play(self):
+        for ball in self.balls:
+            ball.move()
+        self.check_collision()
+        if self.lives == 0:
+            self.canvas.create_text(200, 200, text="Kaybettiniz!", font=("Arial", 24))
+        else:
+            self.master.after(30, self.play)
+
+    def check_collision(self):
+        for ball in self.balls:
+            x1, y1, x2, y2 = self.canvas.coords(ball.id)
+            overlaps = self.canvas.find_overlapping(x1, y1, x2, y2)
+            for overlap in overlaps:
+                if overlap == 1:
+                    self.score += 1
+                    self.score_label.config(text="Score: {}".format(self.score))
+                    self.canvas.delete(ball.id)
+                    self.balls.remove(ball)
+                    if len(self.balls) == 0:
+                        self.new_balls()
+                elif overlap != ball.id:
+                    self.lives -= 1
+                    self.lives_label.config(text="Lives: {}".format(self.lives))
+                    self.canvas.delete(ball.id)
+                    self.balls.remove(ball)
+                    if len(self.balls) == 0:
+                        self.new_balls()
+
+    def new_b
