@@ -6,7 +6,7 @@ Pinball Game
 This is a simple pinball game created using Python and Pygame.
 
 Installation
-Clone this repository: git clone https://github.com/kodilay/Very-Cool-Pinball-Game-that-I-made-it.git
+Clone this repository: git clone https://github.com/kodilay/Very-Cool-Pinball-Game
 Install Pygame: pip install pygame
 Usage
 Run the game: python main.py
